@@ -57,7 +57,7 @@ public class AuthorDaoImplIntegrationTests {
   }
 
   @Test
-  public void testThatAuthorCanBeCreatedAndUpdated() {
+  public void testThatAuthorCanBeUpdated() {
     Author author = TestDataUtil.createTestAuthor(1L);
     underTest.create(author);
     Author updatedAuthor = TestDataUtil.createTestAuthor(1L, "Paul Coelho", 65);
@@ -65,5 +65,14 @@ public class AuthorDaoImplIntegrationTests {
     Optional<Author> result = underTest.findOne(author.getId());
     assertThat(result).isPresent();
     assertThat(result.get()).isEqualTo(updatedAuthor);
+  }
+
+  @Test
+  public void testThatAuthorCanBeDeleted() {
+    Author author = TestDataUtil.createTestAuthor(1L);
+    underTest.create(author);
+    underTest.delete(author.getId());
+    Optional<Author> result = underTest.findOne(author.getId());
+    assertThat(result).isNotPresent();
   }
 }
