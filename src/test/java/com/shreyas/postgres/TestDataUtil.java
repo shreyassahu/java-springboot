@@ -8,10 +8,18 @@ public final class TestDataUtil {
   }
 
   public static Author createTestAuthor(Long id) {
-    return Author.builder().id(id).name("Abigail Rose").age(80).build();
+    return createTestAuthor(id, "Abigail Rose", 80);
+  }
+
+  public static Author createTestAuthor(Long id, String name, Integer age) {
+    return Author.builder().id(id).name(name).age(age).build();
   }
 
   public static Book createTestBook(String isbn) {
-    return Book.builder().isbn(isbn).title("Test Book").authorId(1L).build();
+    return createTestBook(isbn, "Test Book", 1L);
+  }
+
+  public static Book createTestBook(String isbn, String title, Long authorId) {
+    return Book.builder().isbn(isbn).title(title).authorId(authorId).build();
   }
 }
