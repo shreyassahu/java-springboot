@@ -61,7 +61,7 @@ public class AuthorDaoImplIntegrationTests {
     Author author = TestDataUtil.createTestAuthor(1L);
     underTest.create(author);
     Author updatedAuthor = TestDataUtil.createTestAuthor(1L, "Paul Coelho", 65);
-    underTest.update(author.getId(), updatedAuthor);
+    underTest.update(1L, updatedAuthor);
     Optional<Author> result = underTest.findOne(author.getId());
     assertThat(result).isPresent();
     assertThat(result.get()).isEqualTo(updatedAuthor);
