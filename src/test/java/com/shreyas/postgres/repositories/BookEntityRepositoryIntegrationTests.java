@@ -26,9 +26,9 @@ public class BookEntityRepositoryIntegrationTests {
 
   @Test
   public void testThatBookCanBeCreatedAndRecalled() {
-    AuthorEntity author = TestDataUtil.createTestAuthorA();  // now with no .id()
-    BookEntity book   = TestDataUtil.createTestBookA(author);
-    BookEntity saved = underTest.save(book);
+    AuthorEntity authorEntity = TestDataUtil.createTestAuthorA();  // now with no .id()
+    BookEntity bookEntity = TestDataUtil.createTestBookA(authorEntity);
+    BookEntity saved = underTest.save(bookEntity);
     Optional<BookEntity> fetched = underTest.findById(saved.getIsbn());
     assertThat(fetched).isPresent();
     assertThat(fetched.get()).isEqualTo(saved);
@@ -36,35 +36,35 @@ public class BookEntityRepositoryIntegrationTests {
 
   @Test
   public void testThatMultipleBooksCanBeCreatedAndRecalled() {
-    AuthorEntity author1 = TestDataUtil.createTestAuthorA();
-    AuthorEntity author2 = TestDataUtil.createTestAuthorB();
-    BookEntity book1 = TestDataUtil.createTestBookA(author1);
-    BookEntity book2 = TestDataUtil.createTestBookB(author2);
-    BookEntity savedBook1 = underTest.save(book1);
-    BookEntity savedBook2 = underTest.save(book2);
+    AuthorEntity authorEntity1 = TestDataUtil.createTestAuthorA();
+    AuthorEntity authorEntity2 = TestDataUtil.createTestAuthorB();
+    BookEntity bookEntity1 = TestDataUtil.createTestBookA(authorEntity1);
+    BookEntity bookEntity2 = TestDataUtil.createTestBookB(authorEntity2);
+    BookEntity savedBookEntity1 = underTest.save(bookEntity1);
+    BookEntity savedBookEntity2 = underTest.save(bookEntity2);
     Iterable<BookEntity> result = underTest.findAll();
-    assertThat(result).hasSize(2).containsExactly(savedBook1, savedBook2);
+    assertThat(result).hasSize(2).containsExactly(savedBookEntity1, savedBookEntity2);
   }
 
   @Test
   public void testThatBookCanBeCreatedAndUpdated() {
-    AuthorEntity author = TestDataUtil.createTestAuthorA();
-    BookEntity book = TestDataUtil.createTestBookA(author);
-    BookEntity savedBook = underTest.save(book);
-    savedBook.setTitle("Updated title");
-    underTest.save(savedBook);
-    Optional<BookEntity> result = underTest.findById(savedBook.getIsbn());
+    AuthorEntity authorEntity = TestDataUtil.createTestAuthorA();
+    BookEntity bookEntity = TestDataUtil.createTestBookA(authorEntity);
+    BookEntity savedBookEntity = underTest.save(bookEntity);
+    savedBookEntity.setTitle("Updated title");
+    underTest.save(savedBookEntity);
+    Optional<BookEntity> result = underTest.findById(savedBookEntity.getIsbn());
     assertThat(result).isPresent();
-    assertThat(result.get()).isEqualTo(savedBook);
+    assertThat(result.get()).isEqualTo(savedBookEntity);
   }
 
   @Test
   public void testThatBookCanBeDeleted() {
-    AuthorEntity author = TestDataUtil.createTestAuthorA();
-    BookEntity book = TestDataUtil.createTestBookA(author);
-    BookEntity savedBook = underTest.save(book);
-    underTest.deleteById(savedBook.getIsbn());
-    Optional<BookEntity> result = underTest.findById(savedBook.getIsbn());
+    AuthorEntity authorEntity = TestDataUtil.createTestAuthorA();
+    BookEntity bookEntity = TestDataUtil.createTestBookA(authorEntity);
+    BookEntity savedBookEntity = underTest.save(bookEntity);
+    underTest.deleteById(savedBookEntity.getIsbn());
+    Optional<BookEntity> result = underTest.findById(savedBookEntity.getIsbn());
     assertThat(result).isNotPresent();
   }
 }

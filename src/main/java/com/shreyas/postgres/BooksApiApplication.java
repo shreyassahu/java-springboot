@@ -6,12 +6,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PostgresApplication {
+public class BooksApiApplication {
 
 	private static final Logger log =
-					LoggerFactory.getLogger(PostgresApplication.class);
+					LoggerFactory.getLogger(BooksApiApplication.class);
 
 	public static void main(String[] args) {
-		SpringApplication.run(PostgresApplication.class, args);
+		SpringApplication.run(BooksApiApplication.class, args);
 	}
 }
