@@ -8,6 +8,9 @@ import com.shreyas.postgres.mappers.Mapper;
 import com.shreyas.postgres.repositories.BookRepository;
 import com.shreyas.postgres.services.BookService;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -42,6 +45,13 @@ public class BookServiceImpl implements BookService {
       bookDtoList.add(bookMapper.mapTo(bookEntity));
     }
     return bookDtoList;
+  }
+
+  @Override
+  public Page<BookDto> findAll(Pageable pageable) {
+    return bookRepository
+            .findAll(pageable)
+            .map(bookMapper::mapTo);
   }
 
   @Override

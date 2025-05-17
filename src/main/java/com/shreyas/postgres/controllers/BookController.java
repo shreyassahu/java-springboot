@@ -4,6 +4,8 @@ import com.shreyas.postgres.domain.dto.BookDto;
 import com.shreyas.postgres.services.BookService;
 import com.shreyas.postgres.services.impl.AuthorServiceImpl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,7 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.awt.print.Book;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,8 +40,8 @@ public class BookController {
   }
 
   @GetMapping("/books")
-  public ResponseEntity<List<BookDto>> getAllBooks() {
-    return new ResponseEntity<>(bookService.getBooks(), HttpStatus.valueOf(200));
+  public ResponseEntity<Page<BookDto>> getAllBooks(Pageable pageable) {
+    return new ResponseEntity<>(bookService.findAll(pageable), HttpStatus.valueOf(200));
   }
 
   @GetMapping("/books/{isbn}")
