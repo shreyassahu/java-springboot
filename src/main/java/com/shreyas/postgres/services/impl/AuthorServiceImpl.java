@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AuthorServiceImpl implements AuthorService {
@@ -23,7 +24,7 @@ public class AuthorServiceImpl implements AuthorService {
   }
 
   @Override
-  public AuthorDto createAuthor(AuthorDto authorDto) {
+  public AuthorDto saveAuthor(AuthorDto authorDto) {
     AuthorEntity authorEntity = authorMapper.mapFrom(authorDto);
     AuthorEntity savedAuthorEntity = authorRepository.save(authorEntity);
     return authorMapper.mapTo(savedAuthorEntity);
@@ -37,5 +38,27 @@ public class AuthorServiceImpl implements AuthorService {
       authorDtoList.add(authorMapper.mapTo(authorEntity));
     }
     return authorDtoList;
+  }
+
+  @Override
+  public Optional<AuthorDto> getAuthorById(Long id) {
+    return authorRepository
+            .findById(id)
+            .map(authorMapper::mapTo);
+  }
+
+  @Override
+  public AuthorDto patchUpdateAuthor(Long id, AuthorDto authorDto) {
+    authorDto.setId(id);
+    return authorRepository.findById(id).map(existingAuthor -> {
+      Optional.ofNullable(authorDto.getName()).ifPresent(existingAuthor::setName);
+      Optional.ofNullable(authorDto.getAge()).ifPresent(existingAuthor::setAge);
+      return authorMapper.mapTo(authorRepository.save(existingAuthor));
+    }).orElseThrow(() -> new RuntimeException("Author Doesn't exist"));
+  }
+
+  @Override
+  public void deleteAuthor(Long id) {
+    authorRepository.deleteById(id);
   }
 }

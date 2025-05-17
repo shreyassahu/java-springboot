@@ -82,4 +82,158 @@ public class AuthorControllerIntegrationTest {
             .andExpect(jsonPath("$[0].name").value(testAuthorA.getName()))
             .andExpect(jsonPath("$[0].age").value(testAuthorA.getAge()));
   }
+
+  @Test
+  public void testThatGetAuthorByIdSuccessfullyReturnsHttp200Ok() throws Exception {
+    AuthorEntity testAuthorA = TestDataUtil.createTestAuthorA();
+    String authorJson = objectMapper.writeValueAsString(testAuthorA);
+    mockMvc.perform(MockMvcRequestBuilders.post("/authors")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(authorJson))
+            .andExpect(status().isCreated());
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/authors/1"))
+            .andExpect(status().isOk());
+  }
+
+  @Test
+  public void testThatGetAuthorByIdReturns404NotFoundIfNotExists() throws Exception {
+    mockMvc.perform(MockMvcRequestBuilders.get("/authors/1"))
+            .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void testThatGetAuthorByIdReturnsAuthorWhenExists() throws Exception {
+    AuthorEntity testAuthorA = TestDataUtil.createTestAuthorA();
+    String authorJson = objectMapper.writeValueAsString(testAuthorA);
+    mockMvc.perform(MockMvcRequestBuilders.post("/authors")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(authorJson))
+            .andExpect(status().isCreated());
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/authors/1"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.id").isNumber())
+            .andExpect(jsonPath("$.name").value(testAuthorA.getName()))
+            .andExpect(jsonPath("$.age").value(testAuthorA.getAge()));
+  }
+
+  @Test
+  public void testThatUpdateAuthorSuccessfullyReturnsHttp200Ok() throws Exception {
+    AuthorEntity testAuthorA = TestDataUtil.createTestAuthorA();
+    String authorJson = objectMapper.writeValueAsString(testAuthorA);
+    mockMvc.perform(MockMvcRequestBuilders.post("/authors")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(authorJson))
+            .andExpect(status().isCreated());
+
+    mockMvc.perform(MockMvcRequestBuilders.put("/authors/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(authorJson))
+            .andExpect(status().isOk());
+  }
+
+  @Test
+  public void testThatUpdateAuthorReturns404NotFoundIfNotExists() throws Exception {
+    AuthorEntity testAuthorA = TestDataUtil.createTestAuthorA();
+    String authorJson = objectMapper.writeValueAsString(testAuthorA);
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/authors/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(authorJson))
+            .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void testThatUpdateAuthorSuccessfullyReturnsUpdatedAuthor() throws Exception {
+    AuthorEntity testAuthorA = TestDataUtil.createTestAuthorA();
+    String authorJson = objectMapper.writeValueAsString(testAuthorA);
+    mockMvc.perform(MockMvcRequestBuilders.post("/authors")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(authorJson))
+            .andExpect(status().isCreated());
+
+    testAuthorA.setName("test author");
+    testAuthorA.setAge(20);
+    String updatedAuthorJson = objectMapper.writeValueAsString(testAuthorA);
+    mockMvc.perform(MockMvcRequestBuilders.put("/authors/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(updatedAuthorJson))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.id").isNumber())
+            .andExpect(jsonPath("$.name").value(testAuthorA.getName()))
+            .andExpect(jsonPath("$.age").value(testAuthorA.getAge()));
+  }
+
+  @Test
+  public void testThatPatchAuthorSuccessfullyReturnsHttp200Ok() throws Exception {
+    AuthorEntity testAuthorA = TestDataUtil.createTestAuthorA();
+    String authorJson = objectMapper.writeValueAsString(testAuthorA);
+    mockMvc.perform(MockMvcRequestBuilders.post("/authors")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(authorJson))
+            .andExpect(status().isCreated());
+
+    testAuthorA.setName("test patch author");
+    testAuthorA.setAge(null);
+    mockMvc.perform(MockMvcRequestBuilders.patch("/authors/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(authorJson))
+            .andExpect(status().isOk());
+  }
+
+  @Test
+  public void testThatPatchAuthorReturns404NotFoundIfNotExists() throws Exception {
+    AuthorEntity testAuthorA = TestDataUtil.createTestAuthorA();
+    String authorJson = objectMapper.writeValueAsString(testAuthorA);
+
+    mockMvc.perform(MockMvcRequestBuilders.patch("/authors/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(authorJson))
+            .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void testThatPatchAuthorSuccessfullyReturnsUpdatedAuthor() throws Exception {
+    AuthorEntity testAuthorA = TestDataUtil.createTestAuthorA();
+    String authorJson = objectMapper.writeValueAsString(testAuthorA);
+    mockMvc.perform(MockMvcRequestBuilders.post("/authors")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(authorJson))
+            .andExpect(status().isCreated());
+
+    testAuthorA.setName("test patch author");
+    int originalAge = testAuthorA.getAge();
+    testAuthorA.setAge(null);
+    String updatedAuthorJson = objectMapper.writeValueAsString(testAuthorA);
+    mockMvc.perform(MockMvcRequestBuilders.patch("/authors/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(updatedAuthorJson))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.id").isNumber())
+            .andExpect(jsonPath("$.name").value(testAuthorA.getName()))
+            .andExpect(jsonPath("$.age").value(originalAge));
+  }
+
+  @Test
+  public void testThatDeleteAuthorSuccessfullyDeletesAndReturns204() throws Exception {
+    AuthorEntity testAuthorA = TestDataUtil.createTestAuthorA();
+    String authorJson = objectMapper.writeValueAsString(testAuthorA);
+    mockMvc.perform(MockMvcRequestBuilders.post("/authors")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(authorJson))
+            .andExpect(status().isCreated());
+
+    mockMvc.perform(MockMvcRequestBuilders.delete("/authors/1"))
+            .andExpect(status().isNoContent());
+  }
+
+  @Test
+  public void testThatDeleteAuthorReturns404NotFoundIfNotExists() throws Exception {
+    mockMvc.perform(MockMvcRequestBuilders.delete("/authors/1"))
+            .andExpect(status().isNotFound());
+  }
 }

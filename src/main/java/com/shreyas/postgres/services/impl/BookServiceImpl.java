@@ -1,6 +1,8 @@
 package com.shreyas.postgres.services.impl;
 
+import com.shreyas.postgres.domain.dto.AuthorDto;
 import com.shreyas.postgres.domain.dto.BookDto;
+import com.shreyas.postgres.domain.entities.AuthorEntity;
 import com.shreyas.postgres.domain.entities.BookEntity;
 import com.shreyas.postgres.mappers.Mapper;
 import com.shreyas.postgres.repositories.BookRepository;
@@ -10,16 +12,19 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookServiceImpl implements BookService {
 
   BookRepository bookRepository;
   Mapper<BookEntity, BookDto> bookMapper;
+  Mapper<AuthorEntity, AuthorDto> authorMapper;
 
-  public BookServiceImpl(BookRepository bookRepository, Mapper<BookEntity, BookDto> bookMapper) {
+  public BookServiceImpl(BookRepository bookRepository, Mapper<BookEntity, BookDto> bookMapper, Mapper<AuthorEntity, AuthorDto> authorMapper) {
     this.bookRepository = bookRepository;
     this.bookMapper = bookMapper;
+    this.authorMapper = authorMapper;
   }
 
   @Override
@@ -37,5 +42,29 @@ public class BookServiceImpl implements BookService {
       bookDtoList.add(bookMapper.mapTo(bookEntity));
     }
     return bookDtoList;
+  }
+
+  @Override
+  public Optional<BookDto> getBookById(String isbn) {
+    return bookRepository
+            .findById(isbn)
+            .map(bookMapper::mapTo);
+  }
+
+  @Override
+  public BookDto patchUpdateBook(String isbn, BookDto bookDto) {
+    bookDto.setIsbn(isbn);
+    return bookRepository.findById(isbn).map(existingBookEntity -> {
+      Optional.ofNullable(bookDto.getTitle()).ifPresent(existingBookEntity::setTitle);
+      Optional.ofNullable(bookDto.getAuthorDto()).ifPresent(authorDto -> {
+        existingBookEntity.setAuthorEntity(authorMapper.mapFrom(authorDto));
+      });
+      return bookMapper.mapTo(bookRepository.save(existingBookEntity));
+    }).orElseThrow(() -> new RuntimeException("Author Doesn't exist"));
+  }
+
+  @Override
+  public void deleteBook(String isbn) {
+    bookRepository.deleteById(isbn);
   }
 }
